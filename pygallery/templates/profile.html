@@ -1,0 +1,234 @@
+{% extends "layout.html" %}
+{% block title %}{{me.firstname + " " + me.lastname}}{% endblock %}
+{% block nav_left %}
+<ul class="navbar-nav text-light" id="accordionSidebar">
+    <li class="nav-item"><a class="nav-link active" href="/profile"><i class="fas fa-user"></i><span>Мой
+                профиль</span></a></li>
+    <li class="nav-item"><a class="nav-link" href="/events/my"><i class="fas fa-briefcase"></i><span>Мои
+                мероприятия</span></a></li>
+    <li class="nav-item"><a class="nav-link" href="/calend"><i class="fas fa-calendar"></i><span>Календарь
+                мероприятий</span></a></li>
+    <li class="nav-item"><a class="nav-link" href="/events/add_event"><i class="fas fa-plus-square"></i><span>Добавить
+                мероприятие</span></a></li>
+    {% if me.level >= 3 %}
+    <li class="nav-item"><a class="nav-link" href="/events/manage"><i class="fas fa-th-list"></i><span>Управление
+                заявками</span></a></li>
+    {% endif %}
+    <li class="nav-item"><a class="nav-link" href="/users"><i class="fas fa-users"></i><span>Портфолио</span></a></li>
+    <li class="nav-item"><a class="nav-link" href="/profile/settings"><i
+                class="fas fa-cog"></i><span>Настройки</span></a></li>
+</ul>
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <h3 class="text-start text-dark mb-4">{{me.firstname + " " + me.lastname}}</h3>
+            <div class="col-sm">
+                {% with messages = get_flashed_messages(category_filter=["success"]) %}
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <span>{{ message }}</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+            </div>
+            <div class="col-sm">
+                {% with messages = get_flashed_messages(category_filter=["warning"]) %}
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <span>{{ message }}</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+            </div>
+            <div class="col-sm">
+                {% with messages = get_flashed_messages(category_filter=["danger"]) %}
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <span>{{ message }}</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+        <div class="col">
+            <h4 class="text-end text-primary">{{level_array[me.level]}}</h2>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-lg-3">
+            <div class="card mb-3">
+                <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4"
+                        src="{{ url_for('static', filename='uploads/avatar/'+me.avatar) }}" width="160" height="160">
+                </div>
+            </div>
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="text-primary fw-bold m-0">Статистика ваших заявок</h6>
+                </div>
+                <div class="card-body">
+                    <h4 class="small fw-bold">Необработанные</h4>
+                    {% for d in data %}
+                    {% if d[4] != 0 and d[1] != 0 %}
+                    <h4 class="small fw-italic">{{d[0]}}</h4>
+                    <div class="progress progress-sm mb-3">
+                        <div class="progress-bar bg-warning" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"
+                            style="width: {{(d[1] / d[4]) * 100}}%;"></div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+
+                    <h4 class="small fw-bold">Принятые</h4>
+                    {% for d in data %}
+                    {% if d[4] != 0 and d[2] != 0 %}
+                    <h4 class="small fw-italic">{{d[0]}}</h4>
+                    <div class="progress progress-sm mb-3">
+                        <div class="progress-bar bg-success" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"
+                            style="width: {{(d[2] / d[4]) * 100}}%;"></div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+
+                    <h4 class="small fw-bold">Отклонённые</h4>
+                    {% for d in data %}
+                    {% if d[4] != 0 and d[3] != 0 %}
+                    <h4 class="small fw-italic">{{d[0]}}</h4>
+                    <div class="progress progress-sm mb-3">
+                        <div class="progress-bar bg-danger" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"
+                            style="width: {{(d[3] / d[4]) * 100}}%;"></div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="text-primary fw-bold m-0">QR-код пользователя</h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center"><img class="mb-2 mt-2" width="200" height="200"
+                            src="https://api.qrserver.com/v1/create-qr-code/?data=http://vkapi.me/user/{{me.id}}&color=053d8c"
+                            alt="http://vkapi.me/user/{{me.id}}"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="row">
+                <div class="col">
+                    <div class="card shadow mb-3">
+                        <div class="card-header py-3">
+                            <p class="text-primary m-0 fw-bold">Информация пользователя</p>
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="mb-3"><label class="form-label"
+                                                for="username"><strong>Логин</strong></label>
+                                            <p>{{me.username}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="mb-3"><label class="form-label"
+                                                for="email"><strong>Эл.почта</strong></label>
+                                            <p>{{me.email}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="mb-3"><label class="form-label" for="first_name"><strong>Имя
+                                                    пользователя</strong></label>
+                                            <p>{{me.firstname}}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="mb-3"><label class="form-label" for="last_name"><strong>Фамилия
+                                                    пользователя</strong></label>
+                                            <p>{{me.lastname}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card shadow mb-3">
+                        <div class="card-header py-3">
+                            <p class="text-primary m-0 fw-bold">Сведения об образовательном учреждении
+                            </p>
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="mb-3"><label class="form-label"
+                                                        for="first_name"><strong>Учебное
+                                                            заведение</strong><br></label>
+                                                    <p>{{me.uzname}}</p>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="mb-3"><label class="form-label"
+                                                        for="last_name"><strong>Подразделение</strong></label>
+                                                    <p>{{me.department}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card shadow mb-3">
+                        <div class="card-header py-3">
+                            <p class="text-primary m-0 fw-bold">Статистика по заявках</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-2"><label class="form-label" for="address">
+                                    <p><strong>Количество ваших заявок в обработке:</strong>
+                                        {{data2[0]}}</p>
+                                </label>
+                            </div>
+                            <div class="mb-2"><label class="form-label" for="address">
+                                    <p><strong>Количество ваших заявок в обработке:</strong>
+                                        {{data2[1]}}</p>
+                                </label>
+                            </div>
+                            <div class="mb-2"><label class="form-label" for="address">
+                                    <p><strong>Количество ваших отклоненных заявок:</strong>
+                                        {{data2[2]}}</p>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card shadow mb-3">
+                        <div class="card-header py-3">
+                            <p class="text-primary m-0 fw-bold">Действия</p>
+                        </div>
+                        <div class="card-body">
+                            <form id="get_pgas-form" action="/get_pgas" method="POST">
+                                <div class="mb-3">
+                                    <button class="btn btn-primary" type="submit" id="action" name="action" value="get_pgas">Получить заявку на ПГАС</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

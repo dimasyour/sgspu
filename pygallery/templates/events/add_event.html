@@ -1,0 +1,152 @@
+{% extends "layout.html" %}
+{% block title %}Новое мероприятие{% endblock %}
+{% block nav_left %}
+<ul class="navbar-nav text-light" id="accordionSidebar">
+    <li class="nav-item"><a class="nav-link" href="/profile"><i class="fas fa-user"></i><span>Мой
+        профиль</span></a></li>
+    <li class="nav-item"><a class="nav-link" href="/events/my"><i
+        class="fas fa-briefcase"></i><span>Мои мероприятия</span></a></li>
+    <li class="nav-item"><a class="nav-link" href="/calend"><i
+        class="fas fa-calendar"></i><span>Календарь мероприятий</span></a></li>
+    <li class="nav-item"><a class="nav-link active" href="/events/add_event"><i
+                class="fas fa-plus-square"></i><span>Добавить мероприятие</span></a></li>
+    {% if me.level >= 3 %}
+    <li class="nav-item"><a class="nav-link" href="/events/manage"><i
+                class="fas fa-th-list"></i><span>Управление заявками</span></a></li>
+    {% endif %}
+    <li class="nav-item"><a class="nav-link" href="/users"><i
+                class="fas fa-users"></i><span>Портфолио</span></a></li>
+    <li class="nav-item"><a class="nav-link" href="/profile/settings"><i
+                class="fas fa-cog"></i><span>Настройки</span></a></li>
+</ul>
+{% endblock %}
+{% block content %}
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="text-start text-dark mb-4">Предложить мероприятие</h3>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-lg-4">
+                            <div class="card mb-3">
+                                <div class="card-body text-center shadow"><img class="mb-2 mt-2"
+                                        src="{{ url_for('static',filename= 'assets/img/sgspu_logo.jpg')}}" width="200"
+                                        height="200"></div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="card shadow mb-3">
+                                        <div class="card-header py-3">
+                                            <h5 class="text-primary m-0 fw-bold">Заполните форму нового мероприятия</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <form id="add_event-form" method="POST">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <div class="mb-3"><label class="form-label"
+                                                                for="name"><strong>Название:</strong></label><input
+                                                                class="form-control" type="text" id="name" name="name" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="mb-3"><label class="form-label"
+                                                                for="dop"><strong>Дополнительная
+                                                                    информация:</strong></label><textarea
+                                                                class="form-control form-control=sm" id="dop"
+                                                                name="dop"></textarea></div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <div class="mb-3"><label class="form-label"
+                                                                for="sfera"><strong>Вид
+                                                                    деятельности:</strong><br></label><select
+                                                                class="form-select" id="sfera" name="sfera" required>
+                                                                <option value="Общественная" selected="">Общественная
+                                                                </option>
+                                                                <option value="Творческая">Творческая</option>
+                                                                <option value="Спортивная">Спортивная</option>
+                                                                <option value="Научная">Научная</option>
+                                                            </select></div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <div class="mb-3"><label class="form-label"
+                                                                for="level"><strong>Уровень:</strong><br></label><select
+                                                                class="form-select" id="level" name="level" required>
+                                                                <option value=1 selected="">Факультетский</option>
+                                                                <option value=2>Вузовский</option>
+                                                            </select></div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <div class="mb-3"><label class="form-label"
+                                                                for="name"><strong>Количество
+                                                                    участников:</strong></label><input
+                                                                class="form-control" type="number" id="seats"
+                                                                name="seats" min="1" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <div class="mb-3"><label class="form-label"
+                                                                for="datestart"><strong>Дата
+                                                                    начала:</strong><br></label><input
+                                                                class="form-control" id="datestart" type="date"
+                                                                name="datestart" required></div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="mb-3"><label class="form-label"
+                                                                for="dateend"><strong>Дата
+                                                                    завершения:</strong><br></label><input
+                                                                class="form-control" id="dateend" type="date"
+                                                                name="dateend" required></div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <div class="mb-3"><label class="form-label"
+                                                                for="dateregstart"><strong>Начало приёма
+                                                                    заявок:</strong><br></label><input
+                                                                class="form-control" id="dateregstart" type="date"
+                                                                name="dateregstart" required></div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="mb-3"><label class="form-label"
+                                                                for="dateregend"><strong>Завершение приёма
+                                                                    заявок:</strong><br></label><input
+                                                                class="form-control" id="dateregend" type="date"
+                                                                name="dateregend" required></div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <div class="d-flex justify-content-center mb-2 mt-2"><input
+                                                                class="btn btn-primary" type="submit" id='add_event'
+                                                                name='add_event' value="Добавить мероприятие"></input>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="bg-white sticky-footer">
+                <div class="container my-auto">
+                    <div class="text-center my-auto copyright"><span>Хадиуллин Дмитрий © СГСПУ УСО 2022</span></div>
+                </div>
+            </footer>
+        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div>
+{% endblock %}

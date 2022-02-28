@@ -1,0 +1,241 @@
+{% extends "layout.html" %}
+{% block title %}Настройки{% endblock %}
+{% block nav_left %}
+<ul class="navbar-nav text-light" id="accordionSidebar">
+    <li class="nav-item"><a class="nav-link" href="/profile"><i class="fas fa-user"></i><span>Мой
+        профиль</span></a></li>
+    <li class="nav-item"><a class="nav-link" href="/events/my"><i
+        class="fas fa-briefcase"></i><span>Мои мероприятия</span></a></li>
+    <li class="nav-item"><a class="nav-link" href="/calend"><i
+        class="fas fa-calendar"></i><span>Календарь мероприятий</span></a></li>
+    <li class="nav-item"><a class="nav-link" href="/events/add_event"><i
+                class="fas fa-plus-square"></i><span>Добавить мероприятие</span></a></li>
+    {% if me.level >= 3 %}
+    <li class="nav-item"><a class="nav-link" href="/events/manage"><i
+                class="fas fa-th-list"></i><span>Управление заяввками</span></a></li>
+    {% endif %}
+    <li class="nav-item"><a class="nav-link" href="/users"><i
+                class="fas fa-users"></i><span>Портфолио</span></a></li>
+    <li class="nav-item"><a class="nav-link active" href="/profile/settings"><i
+                class="fas fa-cog"></i><span>Настройки</span></a></li>
+</ul>
+{% endblock %}
+{% block content %}
+                <div class="container-fluid">
+                    <h3 class="text-dark mb-4">{{me.firstname + " " + me.lastname}}</h3>
+                    <div class="col-sm">
+                        {% with messages = get_flashed_messages(category_filter=["success"]) %}
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <span>{{ message }}</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="col-sm">
+                        {% with messages = get_flashed_messages(category_filter=["warning"]) %}
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <span>{{ message }}</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="col-sm">
+                        {% with messages = get_flashed_messages(category_filter=["danger"]) %}
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <span>{{ message }}</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-lg-4">
+                            <div class="card mb-3">
+                                <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4"
+                                    src="{{ url_for('static', filename='uploads/avatar/'+me.avatar) }}"
+                                        width="160" height="160">
+                                        <div class="mb-3">
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sclModal">Обновить фотографию</button><br>
+                                        </div>
+                                </div>
+                            </div>
+
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="text-primary fw-bold m-0">Статистика ваших заявок</h6>
+                                </div>
+                                <div class="card-body">
+
+                                    <h4 class="small fw-bold">Необработанные</h4>
+                                    {% for d in data %}
+                                    {% if d[4] != 0 and d[1] != 0 %}
+                                    <h5 class="small fw-italic">{{d[0]}}</h4>
+                                        <div class="progress progress-sm mb-3">
+                                            <div class="progress-bar bg-warning" aria-valuenow="20" aria-valuemin="0"
+                                                aria-valuemax="100" style="width: {{(d[1] / d[4]) * 100}}%;"></div>
+                                        </div>
+                                        {% endif %}
+                                        {% endfor %}
+
+                                        <h4 class="small fw-bold">Принятые</h4>
+                                        {% for d in data %}
+                                        {% if d[4] != 0 and d[2] != 0 %}
+                                        <h5 class="small fw-italic">{{d[0]}}</h4>
+                                            <div class="progress progress-sm mb-3">
+                                                <div class="progress-bar bg-success" aria-valuenow="20"
+                                                    aria-valuemin="0" aria-valuemax="100"
+                                                    style="width: {{(d[2] / d[4]) * 100}}%;"></div>
+                                            </div>
+                                            {% endif %}
+                                            {% endfor %}
+
+                                            <h4 class="small fw-bold">Отклонённые</h4>
+                                            {% for d in data %}
+                                            {% if d[4] != 0 and d[3] != 0 %}
+                                            <h5 class="small fw-italic">{{d[0]}}</h4>
+                                                <div class="progress progress-sm mb-3">
+                                                    <div class="progress-bar bg-danger" aria-valuenow="20"
+                                                        aria-valuemin="0" aria-valuemax="100"
+                                                        style="width: {{(d[3] / d[4]) * 100}}%;"></div>
+                                                </div>
+                                                {% endif %}
+                                                {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="card shadow mb-3">
+                                        <div class="card-header py-3">
+                                            <p class="text-primary m-0 fw-bold">Информация пользователя</p>
+                                        </div>
+                                        <div class="card-body">
+                                            <form>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <div class="mb-3"><label class="form-label"
+                                                                for="email"><strong>Эл.почта</strong></label><input
+                                                                class="form-control" type="email" id="email"
+                                                                placeholder="{{me.email}}" name="email"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <div class="mb-3"><label class="form-label"
+                                                                for="first_name"><strong>Имя</strong></label><input
+                                                                class="form-control" type="text" id="firstname"
+                                                                placeholder="{{me.firstname}}" name="firstname"></div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="mb-3"><label class="form-label"
+                                                                for="last_name"><strong>Фамилия</strong></label><input
+                                                                class="form-control" type="text" id="lastname"
+                                                                placeholder="{{me.lastname}}" name="lastname"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3"><button class="btn btn-primary btn-sm"
+                                                        type="submit">Обновить данные</button></div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="card shadow">
+                                        <div class="card-header py-3">
+                                            <p class="text-primary m-0 fw-bold">Контактная информация</p>
+                                        </div>
+                                        <div class="card-body">
+                                            <form method="POST" id="update_department">
+                                                <div class="mb-3"><label class="form-label"
+                                                        for="department"><strong>Факультет</strong></label>
+                                                    <select class="form-select" id="department" name="department">
+                                                        {% for d in array_department %}
+                                                            {% if d[1] == me.level %}
+                                                                <option value="{{d}}" selected>{{d[2]}}</option>
+                                                            {% else %}
+                                                            <option value="{{d}}">{{d[2]}}</option>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        <!-- <option value="СГСПУ-1">Факультет математики, физики и информатики</option>
+                                                        <option value="СГСПУ-2">Факультет психологии и специального образования</option>
+                                                        <option value="СГСПУ-3">Факультет культуры и искусства</option>
+                                                        <option value="СГСПУ-4">Исторический факультет</option>
+                                                        <option value="СГСПУ-5">Филологический факультет</option>
+                                                        <option value="СГСПУ-6">Факультет иностранных языков</option>
+                                                        <option value="СГСПУ-7">Факультет экономики, управления и сервиса</option>
+                                                        <option value="СГСПУ-8">Факультет физической культуры и спорта</option>
+                                                        <option value="СГСПУ-9">Факультет начального образования</option>
+                                                        <option value="СГСПУ-10">Естественно-географический факультет</option> -->
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3"><input class="btn btn-primary btn-sm" name="update_department"
+                                                        id="update_department" type="submit" value="Обновить факультет"></input>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="bg-white sticky-footer">
+                <div class="container my-auto">
+                    <div class="text-center my-auto copyright"><span>Copyright © SGSPU USO 2022</span></div>
+                </div>
+            </footer>
+            <div class="modal fade" id="sclModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Обновление фотографии профиля</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="upload_photo-form" method="POST" enctype="multipart/form-data" action="/update_photo">
+                                <div class="row text-center mb-2">
+                                    <div class="col">
+                                        <label class="form-label">Вы можете загрузить изображение в формате JPG, GIF или PNG.<br /></label>
+                                        <input class="form-control" type="file" name="photo" id="photo" /></div>
+                                </div>
+                                <div class="row text-center mb-2">
+                                    <div class="col">
+                                        <input type="submit" name="upload_photo" id="upload_photo" value="Загрузить" class="btn btn-primary"></div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    var firstDD = document.getElementById('uzName');
+    firstDD.addEventListener('change', changeDD);
+    function changeDD() {
+        var fValue = firstDD.value;
+        document.querySelectorAll('#department > optgroup').forEach(function (el) {
+            if (el.label != fValue)
+                el.style.display = 'none';
+            else
+                el.style.display = 'block';
+        });
+        document.querySelector('#department').value = "";
+    }
+    changeDD(firstDD);
+</script>
+{% endblock %}

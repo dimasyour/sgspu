@@ -1,0 +1,167 @@
+/*Signup form password validatation*/
+.showBtn{
+    position: absolute;
+    transform: translateY(-270%);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    display:none;
+  }
+  .indicator{
+    height: 5px;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    display: none;
+  }
+  .indicator span{
+    position: relative;
+    height: 100%;
+    width: 80%;
+    background: lightgrey;
+    border-radius: 5px;
+  }
+  .indicator span:nth-child(2){
+    margin: 0 3px;
+  }
+  .indicator span.active:before{
+    position: absolute;
+    content: '';
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    border-radius: 5px;
+  }
+  .indicator span.weak:before{
+    background-color: #ff4757;
+  }
+  .indicator span.medium:before{
+    background-color: orange;
+  }
+  .indicator span.strong:before{
+    background-color: #23ad5c;
+  }
+  .pw-text{
+    font-size: 12px;
+    font-weight: 450;
+    display: none;
+    margin-bottom: -10px;
+  }
+  .pw-text.weak{
+    color: #ff4757;
+  }
+  .pw-text.medium{
+    color: orange;
+  }
+  .pw-text.strong{
+    color: #23ad5c;
+  }
+  
+  .cpasstext {
+    font-size: 12px;
+    font-weight: 450;
+    display: none;
+    margin-bottom: -10px;
+  }
+  
+  /* responsive password toggler */
+    @media screen and (min-width:1200px){
+    .showBtn{
+      right: 43%;
+      
+    }
+    
+  }
+  @media screen and (min-width: 992px) and (max-width:1199px){
+    .showBtn{
+    right: 32%;
+  }
+  }
+  
+  @media screen and (min-width: 768px) and (max-width: 991px){
+    .showBtn{
+      right: 20%;
+  }
+  }
+  
+  @media screen and (min-width: 576px) and (max-width: 767px){
+    .showBtn{
+      right: 27%;
+  
+  }
+  }
+  
+  @media screen and (min-width: 561px) and (max-width: 575px){
+    .showBtn{
+      right: 30%;
+  
+  }
+  }
+  
+  @media screen and (min-width: 551px) and (max-width: 560px){
+    .showBtn{
+      right: 29%;
+  
+  }
+  }
+  
+  @media screen and (min-width: 540px) and (max-width: 550px){
+    .showBtn{
+      right: 28%;
+  
+  }
+  }
+  
+  @media screen and (min-width: 530px) and (max-width: 539px){
+    .showBtn{
+      right: 27%;
+  
+  }
+  }
+  
+   @media screen and (max-width: 529px){
+    .showBtn{
+      left: 68%;
+  
+  }
+  }
+  
+  
+  /* signup form pw validation*/
+  
+  
+  /* email validation*/
+  
+  .was-validated{
+    border-color: #23ad5c;
+  }
+  
+  
+  /* Reset request alert */
+  #reset-alert{
+    background-color: #23ad5c; 
+    color: white;
+    position: fixed;
+      z-index: 1300;
+      top: 13px;
+      left: 50%;
+      margin: 0 auto;
+      text-align: center;
+      -webkit-transform: translateX(-50%);
+      -ms-transform: translateX(-50%);
+      transform: translateX(-50%);
+      padding-left:10px;
+      padding-right:10px;
+      padding-top: 3px;
+      padding-bottom: 3px;
+      border-radius: 50px;
+      display: none;
+  }
+  
+  
+  .active{
+    display:block;
+  }

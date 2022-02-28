@@ -1,0 +1,122 @@
+{% extends "layout.html" %}
+{% block title %}{{event.name}}{% endblock %}
+{% block nav_left %}
+<ul class="navbar-nav text-light" id="accordionSidebar">
+    <li class="nav-item"><a class="nav-link" href="/profile"><i class="fas fa-user"></i><span>Мой
+        профиль</span></a></li>
+    <li class="nav-item"><a class="nav-link" href="/events/my"><i
+        class="fas fa-briefcase"></i><span>Мои мероприятия</span></a></li>
+    <li class="nav-item"><a class="nav-link active" href="/calend"><i
+        class="fas fa-calendar"></i><span>Календарь мероприятий</span></a></li>
+    <li class="nav-item"><a class="nav-link" href="/events/add_event"><i
+                class="fas fa-plus-square"></i><span>Добавить мероприятие</span></a></li>
+    {% if me.level >= 3 %}
+    <li class="nav-item"><a class="nav-link" href="/events/manage"><i
+                class="fas fa-th-list"></i><span>Управление заявками</span></a></li>
+    {% endif %}
+    <li class="nav-item"><a class="nav-link" href="/users"><i
+                class="fas fa-users"></i><span>Портфолио</span></a></li>
+    <li class="nav-item"><a class="nav-link" href="/profile/settings"><i
+                class="fas fa-cog"></i><span>Настройки</span></a></li>
+</ul>
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-lg-8">
+            <div class="row">
+                <div class="col">
+                    <div class="card shadow mb-3">
+                        <div class="card-header py-3">
+                            <h5 class="text-primary m-0 fw-bold">«{{event.name}}» </h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="updateEvent" name="updateEvent" method="POST">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="mb-3"><label class="form-label" for="name"><strong>Название:</strong></label><input class="form-control" type="text" id="name" name="name" value={{event.name}} readonly></div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="mb-3"><label class="form-label" for="dop"><strong>Описание:</strong></label><textarea class="form-control form-control-sm" id="dop" name="dop" value="" readonly>{{event.dop}}</textarea></div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="mb-3"><label class="form-label" for="sfera"><strong>Вид деятельности:</strong><br></label>
+                                            <select class="form-select" id="sfera" name="sfera">
+                                                {% for s in array_sfera %}
+                                                    {% if s == event.sfera %}
+                                                        <option value={{event.sfera}} selected>{{event.sfera}}</option>
+                                                    {% else %}
+                                                        <option value={{s}} disabled>{{s}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="mb-3"><label class="form-label" for="level"><strong>Уровень:</strong><br></label>
+                                            <select class="form-select" id="level" name="level">
+                                                {% if event.level == 1 %}
+                                                    <option value=1 selected="">Факультетский</option>
+                                                    <option value=2 disabled>Вузовский</option>
+                                                {% elif event.level == 2%}
+                                                <option value=1 disabled>Факультетский</option>
+                                                <option value=2  selected="">Вузовский</option>
+                                                {% endif %}
+                                        </select>
+                                    </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="mb-3"><label class="form-label" for="datestart"><strong>Дата начала:</strong><br></label><input class="form-control" type="date" id="datestart" name="datestart" value={{event.datestart}} readonly></div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="mb-3"><label class="form-label" for="dateend"><strong>Дата завершения:</strong><br></label><input class="form-control" type="date" id="dateend" name="dateend" value={{event.dateend}} readonly></div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="mb-3"><label class="form-label" for="dateregstart"><strong>Начало приёма заявок:</strong><br></label><input class="form-control" type="date" id="dateregstart" name="dateregstart" value={{event.dateregstart}} readonly></div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="mb-3"><label class="form-label" for="dateregend"><strong>Завершение приёма заявок:</strong><br></label><input class="form-control" type="date" id="dateregend" name="dateregend" value={{event.dateregend}} readonly></div>
+                                    </div>
+                                </div>
+                                <div class="row text-center">
+                                    <div class="col">
+                                        <div class="text-end">
+                                            <div class="d-flex justify-content-between">
+                                                <a class="btn btn-primary" role="button" href="/calend">Вернуться</a>
+                                                <button class="btn btn-danger" type="submit" id=solution name=solution value="minus">Отказаться</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card shadow mb-3">
+                <div class="card-header py-3">
+                    <h5 class="text-primary m-0 fw-bold">Дополнительная информация</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="mb-3"><label class="form-label" for="dateRegStart"><strong>Создатель: </strong><br></label><a href="/user/{{event[-3]}}"> {{event[-2] + ' ' + event[-1]}}</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

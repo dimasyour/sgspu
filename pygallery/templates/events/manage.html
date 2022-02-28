@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Управление мероприятиями</title>
+    <meta name="description" content="Управление студенческими организациями">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/fonts/fontawesome-all.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/fonts/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/fonts/fontawesome5-overrides.min.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/jquery.validate.min.js"
+        integrity="sha512-2ZFPcPxv4xOvt+Sz1JMGyoliB3tccdckAJXlEz13o1byNrevFuyDoLs9tZfi+hTHz/h5o/XealriXyhyzGYrGg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+
+<body id="page-top">
+    <div id="wrapper">
+        <nav
+            class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0 toggled">
+            <div class="container-fluid d-flex flex-column p-0"><a
+                    class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="/profile">
+                    <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-laugh-wink"></i></div>
+                    <div class="sidebar-brand-text mx-3"><span>СГСПУ УСО</span></div>
+                </a>
+                <hr class="sidebar-divider my-0">
+                <ul class="navbar-nav text-light" id="accordionSidebar">
+                    <li class="nav-item"><a class="nav-link" href="/profile"><i class="fas fa-user"></i><span>Мой
+                        профиль</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/events/my"><i
+                        class="fas fa-briefcase"></i><span>Мои мероприятия</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/calend"><i
+                        class="fas fa-calendar"></i><span>Календарь мероприятий</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/events/add_event"><i
+                                class="fas fa-plus-square"></i><span>Добавить мероприятие</span></a></li>
+                    {% if me.level >= 3 %}
+                    <li class="nav-item"><a class="nav-link active" href="/events/manage"><i
+                                class="fas fa-th-list"></i><span>Управление заявками</span></a></li>
+                    {% endif %}
+                    <li class="nav-item"><a class="nav-link" href="/users"><i
+                                class="fas fa-users"></i><span>Портфолио</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/profile/settings"><i
+                                class="fas fa-cog"></i><span>Настройки</span></a></li>
+                </ul>
+                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0"
+                        id="sidebarToggle" type="button"></button></div>
+            </div>
+        </nav>
+        <div class="d-flex flex-column" id="content-wrapper">
+            <div id="content">
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
+                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle me-3"
+                            id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+                        <ul class="navbar-nav flex-nowrap ms-auto">
+                            <li class="nav-item dropdown no-arrow">
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
+                                        aria-expanded="false" data-bs-toggle="dropdown" href="#"><span
+                                            class="d-none d-lg-inline me-2 text-gray-600 small">{{me.firstname + " " +
+                                            me.lastname}}</span><img class="border rounded-circle img-profile"
+                                            src="{{ url_for('static', filename='uploads/avatar/'+me.avatar) }}"></a>
+                                    <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a
+                                            class="dropdown-item" href="/profile"><i
+                                                class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Профиль</a><a
+                                            class="dropdown-item" href="/profile/settings"><i
+                                                class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Настройка</a><a
+                                            class="dropdown-item" href="/my_events"><i
+                                                class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Заявки</a>
+                                        <div class="dropdown-divider"></div><a class="dropdown-item" href="/logout"><i
+                                                class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Выйти</a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <div class="container-fluid">
+                    <div class="col-11">
+                        <div class="row">
+                            <div class="col">
+                                <div class="card shadow mb-3">
+                                    <div class="card-header py-3">
+                                        <form enctype="multipart/form-data" method="POST" id="SearchEnrollForm" onsubmit="StartSearchEnroll(); return false;">
+                                        <h5 class="text-primary m-0 fw-bold">Заявки на проведения мероприятий</h5>
+                                            <div class="col-sm">
+                                                {% with messages = get_flashed_messages(category_filter=["success"]) %}
+                                                {% if messages %}
+                                                {% for message in messages %}
+                                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                                    <span>{{ message }}</span>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                </div>
+                                                {% endfor %}
+                                                {% endif %}
+                                                {% endwith %}
+                                            </div>
+                                            <div class="col-sm">
+                                                {% with messages = get_flashed_messages(category_filter=["warning"]) %}
+                                                {% if messages %}
+                                                {% for message in messages %}
+                                                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                                    <span>{{ message }}</span>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                </div>
+                                                {% endfor %}
+                                                {% endif %}
+                                                {% endwith %}
+                                            </div>
+                                            <div class="col-sm">
+                                                {% with messages = get_flashed_messages(category_filter=["danger"]) %}
+                                                {% if messages %}
+                                                {% for message in messages %}
+                                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                                    <span>{{ message }}</span>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                </div>
+                                                {% endfor %}
+                                                {% endif %}
+                                                {% endwith %}
+                                            </div>
+                                            <select class="float-end btn btn-mini btn-outline-primary mb-3" id="status" name="status">
+                                                <option value="all">Все</option>
+                                                <option value="ob">Обработанные</option>
+                                                <option value="neob">Необработанные</option>
+                                                <option value=1>Принятые</option>
+                                                <option value=2>Отклонненые</option>
+                                            </select>
+                                            <div class="input-group mb-3">
+                                                <input class="form-control rounded" type="search" placeholder="Введите название мероприятия" name="enrollSearch" minlength="0" maxlength="50">
+                                                <button class="btn btn-outline-primary" id="enrollSearch" type="button" onclick="StartSearchEnroll()">Поиск</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="table-responsive">
+                                                    <table class="table" id="jds-example">
+                                                        <tbody class="text-center">
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col text-end">
+                                            <div><a class="btn btn-primary" data-bs-toggle="collapse" aria-expanded="true" aria-controls="collapse-1" href="#collapse-1" role="button">?</a>
+                                                <div id="collapse-1" class="collapse">
+                                                    <p class="text-warning"><b>Желтый</b> - В обработке</p>
+                                                    <p class="text-success"><b>Зелёный</b> - Принято</p>
+                                                    <p class="text-danger"><b>Красный</b> - Отклонено</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="bg-white sticky-footer">
+                <div class="container my-auto">
+                    <div class="text-center my-auto copyright"><span>Хадиуллин Дмитрий © СГСПУ УСО 2022</span></div>
+                </div>
+            </footer>
+            <!-- <div class="modal bd-example-modal-lg" data-backdrop="static" data-keyboard="false" tabindex="-1">
+                <div class="modal-dialog modal-sm">
+                    <div class="d-flex justify-content-center">
+                        <div class="spinner-border">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"></script>
+    <script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/bs-init.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $("#SearchEnrollForm").validate({
+                ignore: [],
+                errorElement: 'span',
+                errorElementClass: 'has-error',
+                errorClass: 'fw-bolder text-danger mb-1 mt-1',
+                errorPlacement: function (error, element) {
+                    var el = $(element).parents(".input-group");
+                    error.insertAfter(el);
+                },
+                highlight: function (element, errorClass, validClass) {
+                    $(element).parents(".input-group").addClass(this.settings.errorElementClass);
+
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $(element).parents(".input-group").removeClass(this.settings.errorElementClass);
+                },
+
+                messages: {
+                    enrollSearch: {
+                        required: "Обязательно для заполнения",
+                        maxlength: "Превышено допустимое количество символов",
+                        minlength: "Введите минимум 3 символа"
+                    }
+                },
+                rules: {
+                    enrollSearch: {
+                        maxlength: 50,
+                        minlength: 0
+                    }
+                }
+            });
+
+        });
+    </script>
+    <script>
+        function StartSearchEnroll() {
+            if ($("#SearchEnrollForm").valid()) {
+                // $('.modal').modal("show");
+                clicked = $(this).attr('name');
+                $.ajax({
+                    url: '/get_request_events',
+                    dataSrc: 'data',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: $('form').serialize(),
+                    success: function (data) {
+                        console.log(data)
+                        $('#jds-example').html('');
+                        var column_data = '';
+                        column_data += '<thead class="text-center card-header"><tr>';
+                        header_table = ['Название', 'Дата начала', 'Начало регистрации', 'Создатель']
+                        for (let i = 0; i < header_table.length; i += 1) {
+                            column_data += '<th><h6 class="text-primary m-0 fw-bold">' + header_table[i] + '</h6></th>';
+                        }
+                        column_data += '</tr></thead><tbody class="text-center">';
+
+                        $('#jds-example').append(column_data);
+                        var row_data = '';
+                        row_data = ''
+                        for (var arr in data) {
+                            var obj = data[arr];
+                            if (obj['Статус'] == 0) {
+                                row_data += '<tr class="table-warning">';
+                            }
+                            else if (obj['Статус'] == 1) {
+                                row_data += '<tr class="table-success">';
+                            }
+                            else if (obj['Статус'] == 2) {
+                                row_data += '<tr class="table-danger">';
+                            }
+                            else if (obj['Статус'] == 3) {
+                                row_data += '<tr class="table-info">';
+                            }
+                            for (var key in obj) {
+                                if (key == 'Название') {
+                                    var link = '<a href="/event/manage/'+ obj['Ссылка'] +'">'+ obj[key] + '</a>';
+                                    row_data += '<td>' + link + '</td>';
+                                }
+                                if (key == 'Фамилия') {
+                                    var fio =  '<a href="/user/' + obj['ИД'] +'">'+ obj['Фамилия'] + " " + obj['Имя'] + '</a>';
+                                    row_data += '<td>' + fio + '</td>';
+                                }
+                                if (key != 'Название' & key != 'Ссылка' & key != 'Фамилия' & key != 'Имя' & key != 'ИД' & key != 'Статус') {
+                                    var value = obj[key];
+                                    row_data += '<td>' + value + '</td>';
+                                    
+                            }
+                            };
+                            row_data += '</tr>'
+                        };
+                        row_data += '</tbody>'
+                        $('#jds-example').append(row_data);
+                        // $('.modal').modal("hide");
+                    },
+                    error: function (data) {
+                        console.log('Error Hit');
+                        console.log(data);
+                    }
+                })
+            }
+        }
+    </script>
+</body>
+
+</html>

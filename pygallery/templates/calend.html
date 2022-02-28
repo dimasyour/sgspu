@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+{% block title %}Календарь мероприятий{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.min.css') }}">
+<script src="{{ url_for('static', filename='assets/js/main.min.js') }}"></script>
+{% endblock %}
+{% block nav_left %}
+<ul class="navbar-nav text-light" id="accordionSidebar">
+    <li class="nav-item"><a class="nav-link" href="/profile"><i class="fas fa-user"></i><span>Мой
+        профиль</span></a></li>
+    <li class="nav-item"><a class="nav-link" href="/events/my"><i
+        class="fas fa-briefcase"></i><span>Мои мероприятия</span></a></li>
+    <li class="nav-item"><a class="nav-link active" href="/calend"><i
+        class="fas fa-calendar"></i><span>Календарь мероприятий</span></a></li>
+    <li class="nav-item"><a class="nav-link" href="/events/add_event"><i
+                class="fas fa-plus-square"></i><span>Добавить мероприятие</span></a></li>
+    {% if me.level >= 3 %}
+    <li class="nav-item"><a class="nav-link" href="/events/manage"><i
+                class="fas fa-th-list"></i><span>Управление заявками</span></a></li>
+    {% endif %}
+    <li class="nav-item"><a class="nav-link" href="/users"><i
+                class="fas fa-users"></i><span>Портфолио</span></a></li>
+    <li class="nav-item"><a class="nav-link" href="/profile/settings"><i
+                class="fas fa-cog"></i><span>Настройки</span></a></li>
+</ul>
+{% endblock %}
+{% block content %}
+  <div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-lg-8">
+            <div class="row">
+                <div class="col">
+                    <div class="card shadow mb-3">
+                        <div class="card-header py-3">
+                            <h5 class="text-primary m-0 fw-bold">Календарь мероприятий</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="col-sm">
+                                {% with messages = get_flashed_messages(category_filter=["success"]) %}
+                                {% if messages %}
+                                {% for message in messages %}
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    <span>{{ message }}</span>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+                                {% endwith %}
+                            </div>
+                            <div class="col-sm">
+                                {% with messages = get_flashed_messages(category_filter=["warning"]) %}
+                                {% if messages %}
+                                {% for message in messages %}
+                                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                    <span>{{ message }}</span>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+                                {% endwith %}
+                            </div>
+                            <div class="col-sm">
+                                {% with messages = get_flashed_messages(category_filter=["danger"]) %}
+                                {% if messages %}
+                                {% for message in messages %}
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <span>{{ message }}</span>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+                                {% endwith %}
+                            </div>
+                          <div id="calendar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+  let calendarEl = document.getElementById('calendar');
+    
+  let calendar = new FullCalendar.Calendar(calendarEl, {
+      locale: 'ru',
+      firstDay: 1,
+      eventColor: '#053d8c',
+      events: [
+      {% for event in events %}
+      {
+          title: '{{ event.title }}',
+          start: '{{ event.start_date }}',
+          end: '{{ event.end_date }}',
+          url: '{{ event.url }}',
+          color: '{{ event.color }}'
+      },
+      {% endfor %}
+      ]
+  });
+
+  calendar.render();
+</script>
+{% endblock %}
